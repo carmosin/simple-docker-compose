@@ -1,0 +1,54 @@
+# TEST_FILE=the/test/file docker-compose up --abort-on-container-exit
+version: "2.1"
+services:
+  firefox:
+    image: selenium/standalone-firefox
+    ports:
+      - "4445:4444"
+    healthcheck:
+      test: wget -nv --spider http://localhost:4444
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+
+  chrome:
+    image: selenium/standalone-chrome:3.0.1
+    ports:
+      - "4444:4444"
+    volumes:
+      - /home/seluser 
+      - /dev/shm:/dev/shm
+    healthcheck:
+      test: wget -nv --spider http://localhost:4444
+      interval: 2s
+      timeout: 5s
+      retries: 10
+
+  robot:
+    image: carmosin/robot-docker-fareoffice
+    depends_on:
+      chrome:
+        condition: service_healthy
+      firefox:
+        condition: service_healthy
+    links:
+      - firefox
+      - chrome
+    environment:
+      - "TEST_FILE=${TEST_FILE}"
+
+    volumes:
+      - "./:/tests"
+      - "./:/robot-results"
+      - "~/.aws/:/root/.aws/"
+   
+  web:
+    image: carmosin/node-web
+    ports: 
+       - "8082:8082"
+
+  api:
+    image: carmosin/node-web-api
+    ports: 
+       - "8081:8081"
