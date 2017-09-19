@@ -26,7 +26,7 @@ services:
       retries: 10
 
   robot:
-    image: carmosin/robot-docker-fareoffice
+    image: carmosin/robot-docker
     depends_on:
       chrome:
         condition: service_healthy
