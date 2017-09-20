@@ -50,5 +50,5 @@ services:
 
   api:
     image: carmosin/node-web-api
-    ports: 
-       - "8081:8081"
+ #   ports: 
+ #      - "8081:8081"
